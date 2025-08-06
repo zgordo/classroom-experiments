@@ -1,3 +1,44 @@
+# Classroom Experiments App
+
+This app allows professors to run classroom experiments (like visual search) and collect anonymous student data. Students join with a unique 6-digit ID, and the professor can start/end the experiment and download all results as a CSV.
+
+## Running with Docker
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/yourusername/classroom-experiments.git
+   cd classroom-experiments
+   ```
+2. **Build the Docker image:**
+   ```sh
+   docker build -t classroom-experiments .
+   ```
+3. **Run the Docker container:**
+   ```sh
+   docker run -p 3000:3000 classroom-experiments
+   ```
+4. **Open your browser:**
+   Visit [http://localhost:3000](http://localhost:3000)
+
+## Features
+- Professor/student role selection
+- Professor controls experiment state for all students
+- Anonymous 6-digit student IDs
+- Centralized CSV export for all results
+- Easily extensible for new experiments
+
+---
+
+For development without Docker, you can also run:
+```sh
+npm install
+npm run dev
+```
+
+---
+
+Feel free to fork and extend for your own classroom needs!
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
