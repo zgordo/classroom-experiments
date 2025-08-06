@@ -1,5 +1,8 @@
 # Use official Node.js LTS image
-FROM node:20-alpine
+FROM node:20-alpine3.19
+
+# Update Alpine packages to fix vulnerabilities
+RUN apk update && apk upgrade --no-cache
 
 # Set working directory
 WORKDIR /app

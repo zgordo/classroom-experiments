@@ -19,30 +19,41 @@ function generateStudentId() {
 }
 
 // Utility to get/set classroom state/results in localStorage
+type ClassroomState = { started: boolean; ended: boolean };
+type ExperimentResult = {
+  studentId: string;
+  trial: number;
+  target: string;
+  present: boolean;
+  response: string;
+  correct: boolean;
+  rt: number;
+};
+
 const CLASSROOM_KEY = 'classroom-experiment-state';
 const RESULTS_KEY = 'classroom-experiment-results';
 
-function getClassroomState() {
+function getClassroomState(): ClassroomState {
   if (typeof window === 'undefined') return { started: false, ended: false };
   try {
-    return JSON.parse(localStorage.getItem(CLASSROOM_KEY) || '{}');
+    return JSON.parse(localStorage.getItem(CLASSROOM_KEY) || '{}') as ClassroomState;
   } catch {
     return { started: false, ended: false };
   }
 }
-function setClassroomState(state: any) {
+function setClassroomState(state: ClassroomState) {
   localStorage.setItem(CLASSROOM_KEY, JSON.stringify(state));
-  window.dispatchEvent(new Event('storage')); // force update for all tabs
+  window.dispatchEvent(new Event('storage'));
 }
-function getResults() {
+function getResults(): ExperimentResult[] {
   if (typeof window === 'undefined') return [];
   try {
-    return JSON.parse(localStorage.getItem(RESULTS_KEY) || '[]');
+    return JSON.parse(localStorage.getItem(RESULTS_KEY) || '[]') as ExperimentResult[];
   } catch {
     return [];
   }
 }
-function addResult(result: any) {
+function addResult(result: ExperimentResult) {
   const results = getResults();
   results.push(result);
   localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
@@ -53,7 +64,7 @@ function clearResults() {
 
 export default function ExperimentManager() {
   const [role, setRole] = useState<'professor' | 'student' | null>(null);
-  const [experiment, setExperiment] = useState<ExperimentType>('visual-search');
+  const [experiment] = useState<ExperimentType>('visual-search');
   const [started, setStarted] = useState(false);
   const [ended, setEnded] = useState(false);
   const [studentId, setStudentId] = useState<string | null>(null);
@@ -81,13 +92,13 @@ export default function ExperimentManager() {
     const id = generateStudentId();
     setStudentId(id);
   }
-  function handleStudentResult(result: any) {
+  function handleStudentResult(result: ExperimentResult) {
     addResult(result);
   }
   function handleDownloadCSV() {
     const results = getResults();
     const header = 'student_id,trial,target,present,response,correct,rt\n';
-    const rows = results.map((d: any) => [d.studentId, d.trial, d.target, d.present, d.response, d.correct, d.rt].join(','));
+    const rows = results.map((d) => [d.studentId, d.trial, d.target, d.present, d.response, d.correct, d.rt].join(','));
     const csv = header + rows.join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);

@@ -33,13 +33,32 @@ function randomPositions(count: number) {
   }));
 }
 
-export default function VisualSearchExperiment({ studentId, onResult }: { studentId: string; onResult: (result: any) => void }) {
-  const [trial, setTrial] = useState(0);
-  const [showInstructions, setShowInstructions] = useState(true);
-  const [fullscreen, setFullscreen] = useState(false);
+interface VisualSearchExperimentProps {
+  studentId: string;
+  onResult: (result: {
+    studentId: string;
+    trial: number;
+    target: string;
+    present: boolean;
+    response: string;
+    correct: boolean;
+    rt: number;
+  }) => void;
+}
+
+export default function VisualSearchExperiment({ studentId, onResult }: VisualSearchExperimentProps) {
+  const [trial, setTrial] = useState<number>(0);
+  const [showInstructions, setShowInstructions] = useState<boolean>(true);
+  const [fullscreen, setFullscreen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [trialState, setTrialState] = useState<any>(null);
-  const [targetIcon, setTargetIcon] = useState(() => ICONS[getRandomInt(ICONS.length)]);
+  const [trialState, setTrialState] = useState<{
+    targetIcon: string;
+    targetPresent: boolean;
+    icons: string[];
+    positions: { top: number; left: number }[];
+    start: number;
+  } | null>(null);
+  const [targetIcon, setTargetIcon] = useState<string>(() => ICONS[getRandomInt(ICONS.length)]);
 
   useEffect(() => {
     if (fullscreen && containerRef.current) {
@@ -66,7 +85,7 @@ export default function VisualSearchExperiment({ studentId, onResult }: { studen
     if (targetPresent) icons.push(targetIcon);
     icons = shuffle(icons);
     const positions = randomPositions(ICONS_PER_TRIAL);
-    setTrialState({ targetPresent, icons, positions, start: Date.now() });
+    setTrialState({ targetIcon, targetPresent, icons, positions, start: Date.now() });
   }
 
   function handleKey(e: KeyboardEvent) {
